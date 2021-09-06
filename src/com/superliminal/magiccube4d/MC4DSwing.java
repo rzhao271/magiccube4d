@@ -1487,6 +1487,7 @@ public class MC4DSwing extends JFrame {
             modes.add(new LeftAlignedRow(new PropCheckBox("Highlight by Cubie", "highlightbycubie", false, repainter, "Whether to highlight all stickers of hovered piece or just the hovered sticker")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Allow Antialiasing", "antialiasing", true, repainter, "Whether to smooth polygon edges when still - Warning: Can be expensive on large puzzles")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Mute Sound Effects", MagicCube.MUTED, false, repainter, "Whether to allow sound effects")));
+            modes.add(new LeftAlignedRow(new PropCheckBox("Only Allow Ridge Turns", "onlyridgeturns", false, repainter, "Whether to only allow ridge turns")));
             modes.add(new LeftAlignedRow(blindfoldbox));
             final PropCheckBox quick = new PropCheckBox("Quick Moves:", "quickmoves", false, repainter, "Whether to skip some or all twist animation");
             modes.add(new LeftAlignedRow(quick));
