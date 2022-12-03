@@ -1,2 +1,4 @@
-/bin
-/.settings
+bin/
+classes/
+.settings/
+.idea/
