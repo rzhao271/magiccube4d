@@ -57,7 +57,7 @@ public class StaticUtils {
      * @param action callback to notify when control key is pressed
      */
     public static void addHotKey(int key, JComponent to, String actionName, Action action) {
-        addHotKey(KeyStroke.getKeyStroke(key, key == KeyEvent.VK_ESCAPE ? 0 : java.awt.event.InputEvent.CTRL_MASK), to, actionName, action);
+        addHotKey(KeyStroke.getKeyStroke(key, key == KeyEvent.VK_ESCAPE ? 0 : java.awt.event.InputEvent.CTRL_DOWN_MASK), to, actionName, action);
     }
 
     public static void addHotKey(KeyStroke keystroke, JComponent to, String actionName, Action action) {
