@@ -127,7 +127,7 @@ public final class CSG
     //
 
         private static long nIds = 0; // so we can give a unique integer id to everything ever created
-        private static Object nIdsLock = new Object(); // for synchronization
+        private static final Object nIdsLock = new Object(); // for synchronization
         private static java.util.Random randomGenerator = new java.util.Random(0);
 
         /**
@@ -516,26 +516,27 @@ public final class CSG
                 return _allIncidences;
             } // getAllIncidences
 
+            @SuppressWarnings(value = "unchecked")
             public String toString(String indentString,
                                    boolean showAux,
                                    boolean showGoryDetails,
-                                   java.util.Hashtable printedAlready)
+                                   java.util.HashSet printedAlready)
             {
                 String nl = System.getProperty("line.separator");
                 if (printedAlready == null)
-                    printedAlready = new java.util.Hashtable();
+                    printedAlready = new java.util.HashSet();
 
                 StringBuffer sb = new StringBuffer();
                 if (showGoryDetails)
                 {
                     sb.append("Polytope "+id+" {" + nl);
-                    if (printedAlready.containsKey(this))
+                    if (printedAlready.contains(this))
                     {
                         sb.append(indentString + "    (printed already)" + nl);
                     }
                     else
                     {
-                        printedAlready.put(this,this);
+                        printedAlready.add(this);
 
                         if (showAux)
                             sb.append(indentString + "    (aux="+aux+")");
@@ -569,14 +570,14 @@ public final class CSG
                     }
 
                     //sb.append("[");
-                    if (printedAlready.containsKey(this))
+                    if (printedAlready.contains(this))
                     {
                         if (true)
                             sb.append(" (see above)");
                     }
                     else
                     {
-                        printedAlready.put(this,this);
+                        printedAlready.add(this);
                         for (int iHyperplane = 0; (iHyperplane) < (contributingHyperplanes.length); ++iHyperplane)
                         {
                             sb.append("  (" + contributingHyperplanes[iHyperplane] + ")");
@@ -861,26 +862,27 @@ public final class CSG
                 this.p = p;
             }
 
+            @SuppressWarnings(value = "unchecked")
             public String toString(String indentString,
                                    boolean showAux,
                                    boolean showGoryDetails,
-                                   java.util.Hashtable printedAlready)
+                                   java.util.HashSet printedAlready)
             {
                 String nl = System.getProperty("line.separator");
                 if (printedAlready == null)
-                    printedAlready = new java.util.Hashtable();
+                    printedAlready = new java.util.HashSet();
 
                 StringBuffer sb = new StringBuffer();
                 if (showGoryDetails)
                 {
                     sb.append("SPolytope "+id+" {" + nl);
-                    if (printedAlready.containsKey(this))
+                    if (printedAlready.contains(this))
                     {
                         sb.append(indentString + "    (printed already)" + nl);
                     }
                     else
                     {
-                        printedAlready.put(this,this);
+                        printedAlready.add(this);
 
                         sb.append(indentString + "    initialDensity = " + initialDensity + nl);
                         sb.append(indentString + "    sign = " + sign + nl);
@@ -1939,8 +1941,7 @@ public final class CSG
             }
             double v0coords[] = v0.getCoords();
 
-            // XXX it looks to me like Vector behavior is O(n^2) !?? stupid!
-            java.util.Vector simplicesList = new java.util.Vector();
+            java.util.LinkedList<double[][]> simplicesList = new java.util.LinkedList<>();
             {
                 SPolytope facets[] = p.facets;
                 int nFacets = facets.length;
@@ -1962,7 +1963,7 @@ public final class CSG
                             {temp=(simplex[k-1]);simplex[k-1]=(simplex[k]);simplex[k]=(temp);};
                         }
                         for (int i = (((facet.sign) < 0 ? -(facet.sign) : (facet.sign)))-1; (i) >= 0; --i)
-                            simplicesList.addElement(VecMath.copymat(simplex));
+                            simplicesList.add(VecMath.copymat(simplex));
                     }
                 }
                 else // k > 1
@@ -1990,14 +1991,12 @@ public final class CSG
                                 {temp=(simplex[k-1]);simplex[k-1]=(simplex[k]);simplex[k]=(temp);};
                             }
                             for (int i = (((facet.sign) < 0 ? -(facet.sign) : (facet.sign)))-1; (i) >= 0; --i)
-                                simplicesList.addElement(VecMath.copymat(simplex));
+                                simplicesList.add(VecMath.copymat(simplex));
                         }
                     }
                 }
             }
-            double array[][][] = new double[simplicesList.size()][k+1][n];
-            simplicesList.copyInto(array);
-            return array;
+            return simplicesList.toArray(new double[simplicesList.size()][k+1][n]);
         } // simplicallySubdivide
 
         // This will be the actual (signed) volume
@@ -2077,7 +2076,7 @@ public final class CSG
                                          A.sign*B.sign,
                                          _cross(A.p,
                                                 B.p,
-                                                new java.util.Hashtable(),
+                                                new java.util.HashMap<>(),
                                                 ""));
 
             // If I was smart, _cross would simply get the signs right
@@ -2097,7 +2096,7 @@ public final class CSG
         // doesn't even try to get the signs right.
         private static Polytope _cross(Polytope A,
                                        Polytope B,
-                                       java.util.Hashtable ocean, // hashtable of crossings already done
+                                       java.util.HashMap<HashablePair, Polytope> ocean, // hashtable of crossings already done
                                        String indentString) // for debugging
         {
             String subIndentString = null;
@@ -2107,7 +2106,7 @@ public final class CSG
                 subIndentString = indentString + "        ";
             }
             HashablePair key = new HashablePair(A, B);
-            Polytope AB = (Polytope)ocean.get(key);
+            Polytope AB = ocean.get(key);
             if (AB == null)
             {
                 SPolytope facets[] = new SPolytope[A.facets.length + B.facets.length];
@@ -2197,9 +2196,9 @@ public final class CSG
             SPolytope aboveBelowOn[/*3*/] = _slice(slicee,
                                                    hyperplane,
                                                    aux,
-                                                   new java.util.Hashtable(),
+                                                   new java.util.HashMap<>(),
                                                    "");
-            do { if (!(aboveBelowOn != null)) throw new Error("Assertion failed at "+"com/donhatchsw/util/CSG.prejava"+"("+2180 +"): " + "aboveBelowOn != null" + ""); } while (false);
+            do { if (aboveBelowOn == null) throw new Error("Assertion failed at "+"com/donhatchsw/util/CSG.prejava"+"("+2180 +"): " + "aboveBelowOn != null" + ""); } while (false);
             if (returnAbove != null)
                 returnAbove[0] = aboveBelowOn[0];
             if (returnBelow != null)
@@ -2225,7 +2224,7 @@ public final class CSG
                 System.out.println("in CSG.slice");
                 System.out.println("hyperplane" + " = " + (hyperplane));
             }
-            java.util.Hashtable ocean = new java.util.Hashtable();
+            java.util.HashMap<Polytope, SPolytope[]> ocean = new java.util.HashMap<>();
 
             SPolytope newFacets[] = new SPolytope[2*slicee.p.facets.length]; // at most
             int nNewFacets = 0;
@@ -2257,7 +2256,7 @@ public final class CSG
         private static SPolytope[/*3*/] _slice(SPolytope slicee,
                                                Hyperplane hyperplane,
                                                Object aux,
-                                               java.util.Hashtable ocean, // hashtable of slicings already done
+                                               java.util.HashMap<Polytope, SPolytope[]> ocean, // hashtable of slicings already done
                                                String indentString) // for debugging
         {
             String subIndentString = null;
@@ -2266,7 +2265,7 @@ public final class CSG
                 System.out.println(indentString+"in CSG._slice (slicee dim = "+slicee.p.dim+")");
                 subIndentString = indentString + "        ";
             }
-            SPolytope aboveBelowOn[/*3*/] = (SPolytope[])ocean.get(slicee.p);
+            SPolytope aboveBelowOn[/*3*/] = ocean.get(slicee.p);
             if (aboveBelowOn == null)
             {
                 // Not already in the ocean... need to calculate it
@@ -2648,7 +2647,7 @@ public final class CSG
         // recursive work function used by intersect()
         private static SPolytope _intersect(SPolytope A,
                                             SPolytope B,
-                                            java.util.Hashtable ocean, // hashtable of intersection polytopes created, keyed by contributing hyperplanes
+                                            java.util.HashMap<HashableSortedArray, Polytope> ocean, // hashtable of intersection polytopes created, keyed by contributing hyperplanes
                                             String indentString) // for debugging
         {
             String subIndentString = null;
@@ -2746,33 +2745,19 @@ public final class CSG
 
             // Look in the ocean for already computed...
             {
-                Object flotsam = ocean.get(key);
+                Polytope flotsam = ocean.get(key);
                 if (flotsam != null)
                 {
                     // Found it in the ocean, so it was previously computed.
                     if (verboseLevel >= 1)
                         System.out.println(indentString+"        found it in the ocean");
-                    if (flotsam instanceof Polytope)
-                    {
-                        if (verboseLevel >= 2)
-                        {
-                            System.out.println(indentString+"        and it was good");
-                            System.out.println(indentString+"out CSG.intersect");
-                        }
-                        return new SPolytope(0, // XXX initial density always 0 in this case?
-                                             1, // XXX probably not right, fix later
-                                             (Polytope)flotsam);
+                    if (verboseLevel >= 2) {
+                        System.out.println(indentString + "        and it was good");
+                        System.out.println(indentString + "out CSG.intersect");
                     }
-                    else
-                    {
-                        // It was previously computed and came out null.
-                        if (verboseLevel >= 1)
-                        {
-                            System.out.println(indentString+"        and it was null");
-                            System.out.println(indentString+"out CSG.intersect");
-                        }
-                        return null;
-                    }
+                    return new SPolytope(0, // XXX initial density always 0 in this case?
+                                         1, // XXX probably not right, fix later
+                                         flotsam);
                 }
             } // looked in the ocean
 
@@ -3009,7 +2994,7 @@ public final class CSG
             if (result != null)
                 ocean.put(key, result.p);
             else
-                ocean.put(key, new Object()); // means null when fished out
+                ocean.put(key, null); // means null when fished out
 
             if (verboseLevel >= 2)
                 System.out.println(indentString+"    result = "+(result==null?"(null)":result.toString(indentString+"             ", false, false, null)));
@@ -3024,7 +3009,7 @@ public final class CSG
                                           SPolytope B)
         {
             SPolytope result = _intersect(A, B,
-                                          new java.util.Hashtable(),
+                                          new java.util.HashMap<>(),
                                           "");
 
             // _intersect returns an empty polytope
@@ -3465,7 +3450,7 @@ public final class CSG
             {
                 for (int iFacet = 0; (iFacet) < (nFacets); ++iFacet)
                     facetNeighbors[iFacet] = new int[facets[iFacet].p.facets.length][/*2*/];
-                java.util.Hashtable firstFacetContainingRidge = new java.util.Hashtable();
+                java.util.HashMap<Polytope, int[]> firstFacetContainingRidge = new java.util.HashMap<>();
                 for (int iFacet = 0; (iFacet) < (nFacets); ++iFacet)
                 {
                     Polytope facet = facets[iFacet].p;
@@ -3475,7 +3460,7 @@ public final class CSG
                     {
                         Polytope ridge = ridgesThisFacet[iRidgeThisFacet].p;
                         int myInfo[] = {iFacet, iRidgeThisFacet};
-                        int neighborInfo[] = (int[])firstFacetContainingRidge.remove(ridge);
+                        int neighborInfo[] = firstFacetContainingRidge.remove(ridge);
                         if (neighborInfo == null)
                         {
                             firstFacetContainingRidge.put(ridge, myInfo);
