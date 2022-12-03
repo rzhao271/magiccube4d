@@ -6197,7 +6197,7 @@ class Arrays {
     // all the time...
     //
     public static int[] insert(int array[], int index, int itemToInsert) {
-        return (int[]) insert(array, index, itemToInsert);
+        return insert(array, index, itemToInsert);
     }
 
     public static int[][] insert(int array[][], int index, int itemToInsert[]) {
@@ -6215,7 +6215,7 @@ class Arrays {
     }
 
     public static int[] append(int array[], int itemToAppend) {
-        return (int[]) append(array, itemToAppend);
+        return append(array, itemToAppend);
     }
 
     public static int[][] append(int array[][], int itemToAppend[]) {

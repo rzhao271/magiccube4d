@@ -662,7 +662,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     public static void zerovec(int result[])
     {
         for (int i = (result.length)-1; (i) >= 0; --i)
-            result[i] = (int)0;
+            result[i] = 0;
     }
     /** zero a matrix */
     public static void zeromat(double result[][])

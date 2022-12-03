@@ -1484,7 +1484,7 @@ public class Arrows
                                     printArray("connections", connections);
                                     if (indexOf(connections[indicesOfClosestThing[1]][0], indexOfThingBeingDragged) == -1)
                                         connections[indicesOfClosestThing[1]][0] =
-                                                (int[])append(connections[indicesOfClosestThing[1]][0], new Integer(indexOfThingBeingDragged));
+                                                (int[])append(connections[indicesOfClosestThing[1]][0], indexOfThingBeingDragged);
                                     else
                                         System.out.println("\007This asset is already a src of this event!"); // XXX bell
                                     printArray("connections", connections);
@@ -1513,7 +1513,7 @@ public class Arrows
                                     System.out.println("dragged an event to an asset");
                                     printArray("connections", connections);
                                     if (indexOf(connections[indexOfThingBeingDragged][1], indicesOfClosestThing[0]) == -1)
-                                        connections[indexOfThingBeingDragged][1] = (int[])append(connections[indexOfThingBeingDragged][1], new Integer(indicesOfClosestThing[0]));
+                                        connections[indexOfThingBeingDragged][1] = (int[])append(connections[indexOfThingBeingDragged][1], indicesOfClosestThing[0]);
                                     else
                                         System.out.println("\007This asset is already a dst of this event!"); // XXX bell
                                     printArray("connections", connections);
@@ -1696,7 +1696,7 @@ public class Arrows
                                     assets = (double[][])append(assets, new double[] {curX, curY});
                                     assetVelocities = (double[][])append(assetVelocities, new double[] {0.,0.});
                                     futureAssets = (double[][])append(futureAssets, new double[] {0.,0.});
-                                    nFramesUntilFutures = (int[])append(nFramesUntilFutures, new Integer(0));
+                                    nFramesUntilFutures = (int[])append(nFramesUntilFutures, 0);
                                     // no need to dirty curves since this is added on the end and isn't a part of any curve
                                     if (autoClean)
                                         scheduleCleanup(doCenterWhenAutoClean);
@@ -2311,23 +2311,12 @@ public class Arrows
             int n = A.length;
             Integer Inds[] = new Integer[n];
             for (int i = 0; i < n; ++i)
-                Inds[i] = new Integer(i);
-            //java.util.Arrays.sort(Inds, new java.util.Comparator<Integer>() // for >= 1.5
-            java.util.Arrays.sort(Inds, new java.util.Comparator() // for <= 1.4
+                Inds[i] = i;
+            java.util.Arrays.sort(Inds, new java.util.Comparator<Integer>()
             {
-                public int compare(Object aObj, Object bObj) // for <= 1.4
-                {
-                    int a = ((Integer)aObj).intValue();
-                    int b = ((Integer)bObj).intValue();
-                    return A[a] < A[b] ? -1 :
-                           A[a] > A[b] ? 1 : 0;
-                }
                 public int compare(Integer aObj, Integer bObj) // for >= 1.5
                 {
-                    int a = ((Integer)aObj).intValue();
-                    int b = ((Integer)bObj).intValue();
-                    return A[a] < A[b] ? -1 :
-                           A[a] > A[b] ? 1 : 0;
+                    return Double.compare(A[aObj], A[bObj]);
                 }
             });
             int inds[] = new int[n];

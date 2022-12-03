@@ -495,7 +495,7 @@ public final class Arrays
     {
         // XXX this is of questionable merit
         if (startDepth == 0)
-            return new Integer(arrayLength(array, furtherDepth));
+            return arrayLength(array, furtherDepth);
 
         int n = java.lang.reflect.Array.getLength(array);
         if (startDepth == 1)
@@ -770,7 +770,7 @@ public final class Arrays
     } // fill
     public static int[] fill(int n, int item)
     {
-        return (int[])fill(n, new Integer(item));
+        return fill(n, item);
     }
 
     public static void reverse(int to[], int from[])
@@ -1190,11 +1190,11 @@ public final class Arrays
                         }
                         else
                         {
-                            java.util.Vector v = new java.util.Vector();
+                            java.util.ArrayList<Object> v = new java.util.ArrayList<>();
                             while (true)
                             {
                                 pos.setIndex(i);
-                                v.addElement(parseObject(s, pos,
+                                v.add(parseObject(s, pos,
                                                          end,
                                                          clazz.getComponentType()));
                                 i = pos.getIndex();
@@ -1226,17 +1226,10 @@ public final class Arrays
                                 }
                             }
                             obj = java.lang.reflect.Array.newInstance(clazz.getComponentType(),v.size());
-                            if (false) // lame, it doesn't do the right thing for wrappers
-                            {
-                                v.copyInto((Object[])obj);
-                            }
-                            else
-                            {
-                                int n = v.size();
-                                for (int ii = 0; (ii) < (n); ++ii)
-                                    java.lang.reflect.Array.set(obj,ii,
-                                                                v.elementAt(ii));
-                            }
+                            int n = v.size();
+                            for (int ii = 0; (ii) < (n); ++ii)
+                                java.lang.reflect.Array.set(obj,ii,
+                                                            v.get(ii));
                         }
                     }
                     else
@@ -1250,13 +1243,13 @@ public final class Arrays
                      && s.startsWith("true", i))
                     {
                         i += 4;
-                        obj = new Boolean(true);
+                        obj = Boolean.TRUE;
                     }
                     else if (end-i >= 5
                           && s.startsWith("false", i))
                     {
                         i += 5;
-                        obj = new Boolean(false);
+                        obj = Boolean.FALSE;
                     }
                     else
                     {
@@ -1271,7 +1264,7 @@ public final class Arrays
                     do { if (!(end-i >= 3 && s.charAt(i+0) == '\'' && s.charAt(i+2) == '\'')) throw new Error("Assertion failed at "+"com/donhatchsw/util/Arrays.prejava"+"("+1263 +"): " + "end-i >= 3 && s.charAt(i+0) == '\\'' && s.charAt(i+2) == '\\''" + ""); } while (false);
 
 
-                    obj = new Character(s.charAt(i+1));
+                    obj = s.charAt(i+1);
                     i += 3;
                     pos.setIndex(i);
                 }
@@ -1314,17 +1307,17 @@ public final class Arrays
                     else
                     {
                         if (wrapperClass == Byte.class)
-                            obj = new Byte(number.byteValue());
+                            obj = number.byteValue();
                         else if (wrapperClass == Double.class)
-                            obj = new Double(number.doubleValue());
+                            obj = number.doubleValue();
                         else if (wrapperClass == Float.class)
-                            obj = new Float(number.floatValue());
+                            obj = number.floatValue();
                         else if (wrapperClass == Integer.class)
-                            obj = new Integer(number.intValue());
+                            obj = number.intValue();
                         else if (wrapperClass == Long.class)
-                            obj = new Long(number.longValue());
+                            obj = number.longValue();
                         else if (wrapperClass == Short.class)
-                            obj = new Short(number.shortValue());
+                            obj = number.shortValue();
                         else
                             throw new java.text.ParseException("Don't know how to parse class "+clazz.getName()+"",startPos);
                     }
@@ -1465,19 +1458,18 @@ public final class Arrays
     {
         if (true)
         {
-            Integer thisZero = new Integer(0);
-            Integer thatZero = new Integer(0);
-            Integer thisOne = new Integer(1);
-            Integer thatOne = new Integer(1);
+            Integer thisZero = 0;
+            Integer thatZero = 0;
+            Integer thatOne = 1;
             System.out.println("thisZero == thatZero" + " = " + (thisZero == thatZero));
             System.out.println("thisZero == thatOne" + " = " + (thisZero == thatOne));
             System.out.println("thisZero.equals(thatZero)" + " = " + (thisZero.equals(thatZero)));
             System.out.println("thisZero.equals(thatOne)" + " = " + (thisZero.equals(thatOne)));
             System.out.println("5.f == (long)5" + " = " + (5.f == (long)5));
             System.out.println(".5f == (long)5" + " = " + (.5f == (long)5));
-            System.out.println("((long)1<<(long)34) == ((float)((float)(1<<17)*(float)(1<<17)))" + " = " + (((long)1<<(long)34) == ((float)((float)(1<<17)*(float)(1<<17)))));
+            System.out.println("((long)1<<(long)34) == ((float)((float)(1<<17)*(float)(1<<17)))" + " = " + (((long)1<<(long)34) == (((float)(1<<17)*(float)(1<<17)))));
 
-            System.out.println("(((long)1<<(long)34) + (long)1) == (float)((float)((float)(1<<17)*(float)(1<<17)) + (float)1)" + " = " + ((((long)1<<(long)34) + (long)1) == (float)((float)((float)(1<<17)*(float)(1<<17)) + (float)1)));
+            System.out.println("(((long)1<<(long)34) + (long)1) == (float)((float)((float)(1<<17)*(float)(1<<17)) + (float)1)" + " = " + ((((long)1<<(long)34) + (long)1) == (((float)(1<<17)*(float)(1<<17)) + (float)1)));
 
             // ooh, yuck! that returned true but it shouldn't have!
             // I think the long is getting converted to float!

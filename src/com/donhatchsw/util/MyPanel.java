@@ -188,7 +188,7 @@ public class MyPanel extends Panel
         Frame frame = new Frame("MyPanel Test");
         frame.add(myPanel);
         frame.pack();
-        frame.show();
+        frame.setVisible(true);
     } // main
 
 } // class MyPanel
