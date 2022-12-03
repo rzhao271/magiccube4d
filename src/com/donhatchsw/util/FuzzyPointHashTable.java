@@ -42,7 +42,7 @@ public class FuzzyPointHashTable
     double bigEps;
     double eps; // (littleEps+bigEps)/2
     double invBucketSize; // 1./bucketSize
-    java.util.Hashtable hashtable;
+    java.util.HashMap<FuzzyPoint, Object> hashtable;
 
     /**
     * Construct a fuzzy point hash table.
@@ -84,7 +84,7 @@ public class FuzzyPointHashTable
         this.eps = (littleEps+bigEps)*.5;
         this.invBucketSize = 1./bucketSize;
 
-        this.hashtable = new java.util.Hashtable();
+        this.hashtable = new java.util.HashMap<>();
     } // ctor
 
     private class FuzzyPoint
