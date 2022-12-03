@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.donhatchsw.util.VecMath;
 
@@ -32,7 +32,7 @@ import com.donhatchsw.util.VecMath;
  */
 public class MacroManager implements PuzzleManager.Highlighter {
     private String filePath;
-    private Vector<Macro> macros = new Vector<Macro>();
+    private ArrayList<Macro> macros = new ArrayList<>();
     private Macro curMacro;
     private MagicCube.Stickerspec refStickers[];
     private int nrefs;

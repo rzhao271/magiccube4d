@@ -17,8 +17,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
@@ -445,7 +445,7 @@ public class MC4DView extends Component {
      * The cancelAnimation() method cancels any current animation and clears the queue.
      */
     private static class AnimationQueue {
-        private Vector<Object> queue = new Vector<Object>();
+        private LinkedList<Object> queue = new LinkedList<>();
         private QueueItem animating; // non-null == animation in progress
         private PuzzleManager puzzleMgr;
 
@@ -475,7 +475,7 @@ public class MC4DView extends Component {
             while(animating == null && !queue.isEmpty()) {
                 // No twists are currently animating and there are items queued up,
                 // so begin processing them until one of those things is no longer true.
-                Object item = queue.remove(0);
+                Object item = queue.pop();
                 if(item instanceof QueueItem) { // this is an animatable item.
                     animating = (QueueItem) item;
                     int iTwistGrip = animating.twist.grip.id_within_puzzle;
@@ -534,7 +534,7 @@ public class MC4DView extends Component {
 
         public void cancelAnimation() {
             animating = null;
-            queue.removeAllElements();
+            queue.clear();
         }
     } // end class AnimationQueue
 
