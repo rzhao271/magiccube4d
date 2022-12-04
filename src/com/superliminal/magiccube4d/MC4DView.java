@@ -25,6 +25,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import com.superliminal.util.DefaultProps;
 import com.superliminal.util.PropertyManager;
 import com.superliminal.util.StaticUtils;
 
@@ -377,9 +378,9 @@ public class MC4DView extends Component {
             repaint();
         }
         // antialiasing makes for a beautiful image but can also be expensive to draw therefore
-        // we'll turn on antialiasing only when the the user allows it but keep it off when in motion.
+        // we'll turn on antialiasing only when the user allows it but keep it off when in motion.
         if(g instanceof Graphics2D) {
-            boolean okToAntialias = !isInMotion() && PropertyManager.getBoolean("antialiasing", true);
+            boolean okToAntialias = !isInMotion() && PropertyManager.getBoolean("antialiasing", DefaultProps.ANTIALIASING);
             ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 okToAntialias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
             // Don's fix for 1/2 pixel jump. See issue #138
@@ -389,13 +390,15 @@ public class MC4DView extends Component {
         // paint the background
         g.setColor(skyOverride == null ? PropertyManager.getColor("sky.color", MagicCube.SKY) : skyOverride);
         g.fillRect(0, 0, getWidth(), getHeight());
-        if(PropertyManager.getBoolean("ground", true)) {
+        final boolean paintGround = PropertyManager.getBoolean("ground", DefaultProps.DRAW_GROUND);
+        if(paintGround) {
             g.setColor(PropertyManager.getColor("ground.color"));
             g.fillRect(0, getHeight() * 6 / 9, getWidth(), getHeight());
         }
         // paint the puzzle
         if(puzzleManager != null && puzzleManager.puzzleDescription != null) {
             final boolean do3DStepsOnly = false;
+            final boolean paintShadows = PropertyManager.getBoolean("shadows", DefaultProps.DRAW_SHADOWS);
             PipelineUtils.AnimFrame frame = puzzleManager.computeFrame(
                 PropertyManager.getFloat("faceshrink", MagicCube.FACESHRINK),
                 PropertyManager.getFloat("stickershrink", MagicCube.STICKERSHRINK),
@@ -406,15 +409,15 @@ public class MC4DView extends Component {
                 xOff,
                 yOff,
                 MagicCube.SUNVEC,
-                PropertyManager.getBoolean("shadows", true),
+                paintShadows,
                 do3DStepsOnly,
                 this);
             puzzleManager.paintFrame(g,
                 frame,
-                PropertyManager.getBoolean("shadows", true),
-                PropertyManager.getBoolean("ground", true) ? PropertyManager.getColor("ground.color") : null,
-                PropertyManager.getBoolean("highlightbycubie", false),
-                PropertyManager.getBoolean("outlines", false) ? PropertyManager.getColor("outlines.color") : null,
+                paintShadows,
+                paintGround ? PropertyManager.getColor("ground.color") : null,
+                PropertyManager.getBoolean("highlightbycubie", DefaultProps.HIGHLIGHT_BY_CUBIE),
+                PropertyManager.getBoolean("outlines", DefaultProps.DRAW_OUTLINES) ? PropertyManager.getColor("outlines.color") : null,
                 PropertyManager.getBoolean("blindfold", false),
                 PropertyManager.getFloat("twistfactor", 1));
             if(FPSTimer.isRunning() && rotationHandler.continueSpin() && lastDrag == null) {

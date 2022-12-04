@@ -7,6 +7,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
+import com.superliminal.util.DefaultProps;
 import com.superliminal.util.PropertyManager;
 import com.superliminal.util.PropertyManager.PropertyListener;
 
@@ -102,7 +103,7 @@ public class Audio {
     }
 
     private static void play(Sound sound, boolean looped) {
-        if(PropertyManager.getBoolean(MagicCube.MUTED, false) || audioBroken)
+        if(PropertyManager.getBoolean(MagicCube.MUTED, DefaultProps.MUTE_SOUND_EFFECTS) || audioBroken)
             return; // Don't start any sounds while muted or broken.
         Clip clip = sound2clip(sound);
         if(clip == null)

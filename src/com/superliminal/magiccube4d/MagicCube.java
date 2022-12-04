@@ -162,18 +162,22 @@ public class MagicCube {
         MUTED = "muted", // Whether to play sounds.
         BLINDFOLD = "blindfold"; // Whether to gray out sticker colors.
 
+    // Old sky: new Color(20, 170, 235)
+    // For DEFAULT_FACE_COLORS, use the same colours as in
+    // https://github.com/HactarCE/Hyperspeedcube/blob/main/src/preferences/default.yaml#L209-L217
+    // The cell order is different though: I D F L R B U O
     public final static Color
-        SKY = new Color(20, 170, 235),
+        SKY = Color.darkGray,
         GROUND = new Color(20, 130, 20),
         DEFAULT_FACE_COLORS[] = {
-            new Color(153, 89, 255), // Purple
-            new Color(255, 229, 0), // Yellow
-            new Color(0, 158, 73), // Green
-            new Color(255, 141, 0), // Orange
-            new Color(255, 0, 0), // Red
-            new Color(0, 128, 255), // Blue
-            new Color(255, 255, 255), // White
-            new Color(255, 127, 255), // Pink
+            Color.decode("#8822CC"), // purple
+            Color.decode("#88EE66"), // light green
+            Color.decode("#FFFFFF"), // white
+            Color.decode("#FF9922"), // orange
+            Color.decode("#CC3333"), // red
+            Color.decode("#FFFF00"), // yellow
+            Color.decode("#33AAFF"), // light blue
+            Color.decode("#FF66FF")  // pink
         };
 
     /*

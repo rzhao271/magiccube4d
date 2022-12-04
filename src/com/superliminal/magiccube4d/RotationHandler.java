@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.donhatchsw.util.VecMath;
+import com.superliminal.util.DefaultProps;
 import com.superliminal.util.PropertyManager;
 
 
@@ -132,7 +133,7 @@ public class RotationHandler {
 
     // Advances auto-rotation (if any) and returns true if our settings are such that we should continue.
     public boolean continueSpin() {
-        if(PropertyManager.getBoolean("autorotate", true) && spinDelta != null) {
+        if(PropertyManager.getBoolean("autorotate", DefaultProps.AUTO_ROTATE) && spinDelta != null) {
             applySpinDelta();
             return true;
         }
