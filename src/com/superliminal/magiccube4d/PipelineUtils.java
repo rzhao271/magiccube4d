@@ -555,11 +555,12 @@ public class PipelineUtils
             int poly[] = stickerInds[iSticker][iPolyWithinSticker];
             int j, polyLength = poly.length;
             for(j = 0; j < polyLength; ++j) {
-                if (poly[j] >= vertsLength || poly[(j + 1) % polyLength] >= vertsLength) {
+                int nextJ = (j + 1) % polyLength;
+                if (poly[j] >= vertsLength || poly[nextJ] >= vertsLength) {
                     System.err.println("PipelineUtil.pick: array indexing error");
                     return null;
                 }
-                if (twice_triangle_area(verts[poly[j]], verts[poly[(j + 1) % polyLength]], thispoint) > 0)
+                if (twice_triangle_area(verts[poly[j]], verts[poly[nextJ]], thispoint) > 0)
                     break; // it's CW  (>0 means CW since inverted)
             }
             if(j == polyLength) // they were all CCW, so we hit this poly
@@ -865,10 +866,10 @@ public class PipelineUtils
     private static final float tmpTWAf2[] = new float[2];
     private static float twice_triangle_area(float v0[], float v1[], float v2[])
     {
-        //float tmpTNf1[] = new float[2], tmpTNf2[] = new float[2];
-        Vec_h._VMV2(tmpTWAf1, v1, v0);
-        Vec_h._VMV2(tmpTWAf2, v2, v0);
-        return Vec_h._VXV2(tmpTWAf1, tmpTWAf2);
+        // Compute (v1 - v0) * (v2 - v0)
+        return - (v2[0] * v1[1]) + (v2[0] * v0[1])
+                + (v0[0] * v1[1]) + (v2[1] * v1[0])
+                - (v2[1] * v0[0]) - (v0[1] * v1[0]);
     }
 
 } // class PipelineUtils
