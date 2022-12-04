@@ -167,15 +167,15 @@ public class MC4DView extends Component {
         });
         // Pick up mouse clicks, drags, etc.
         this.addMouseListener(new MouseAdapter() {
-            private boolean wasInMotionWhenPressed = true;
             // look for and initiate twist and rotation animations
             @Override
             public void mouseClicked(MouseEvent e) {
                 MC4DView.this.requestFocusInWindow(); // to start receiving key events.
-                if(!puzzleManager.canMouseClick())
-                    return;
                 boolean isViewRotation = e.isControlDown() || SwingUtilities.isMiddleMouseButton(e);
                 if(isViewRotation) {
+                    if(!puzzleManager.canMouseClick()) {
+                        return;
+                    }
                     // Pass it off to the puzzle manager.
                     if(puzzleManager != null) {
                         puzzleManager.mouseClickedAction(e,
@@ -203,15 +203,13 @@ public class MC4DView extends Component {
                     int dir = (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isMiddleMouseButton(e)) ? MagicCube.CCW : MagicCube.CW;
                     //if(e.isShiftDown()) // Experimental control to allow double twists.
                     //    dir *= 2;
-                    if(!wasInMotionWhenPressed)
-                        fireStickerClickedEvent(e, new MagicCube.TwistData(clicked, dir, getSlicemask()));
+                    fireStickerClickedEvent(e, new MagicCube.TwistData(clicked, dir, getSlicemask()));
                     repaint();
                 }
             }
             // watch for dragging starts and stops
             @Override
             public void mousePressed(MouseEvent arg0) {
-                wasInMotionWhenPressed = isInMotion();
                 rotationHandler.stopSpinning();
                 lastDrag = arg0.getPoint();
                 lastDragTime = arg0.getWhen();
