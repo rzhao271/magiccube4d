@@ -17,7 +17,7 @@ public class MC4DLauncher {
         String thisjar = new File(MC4DLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toString();
         if(thisjar.endsWith(".jar")) {
             System.out.println("Jar: " + thisjar);
-            Runtime.getRuntime().exec("java -Xms128m -Xmx512m -cp " + thisjar + " " + MC4DSwing.class.getCanonicalName());
+            Runtime.getRuntime().exec(new String[] {"java", "-Xms128m", "-Xmx512m", "-cp", thisjar, MC4DSwing.class.getCanonicalName() });
         }
         else {
             System.out.println("Path: " + thisjar);

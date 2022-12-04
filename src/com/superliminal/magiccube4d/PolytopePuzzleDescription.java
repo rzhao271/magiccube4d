@@ -311,7 +311,7 @@ public class PolytopePuzzleDescription implements PuzzleDescription {
         {
             for(int iDim = 0; iDim < originalElements.length; ++iDim)
                 for(int iElt = 0; iElt < originalElements[iDim].length; ++iElt)
-                    originalElements[iDim][iElt].aux = new Integer(iElt);
+                    originalElements[iDim][iElt].aux = iElt;
         }
 
         //
@@ -674,7 +674,7 @@ public class PolytopePuzzleDescription implements PuzzleDescription {
             for(int iSticker = 0; iSticker < nStickers; ++iSticker)
             {
                 CSG.cgOfVerts(stickerCentersD[iSticker], stickers[iSticker]);
-                stickerCentersHashTable.put(stickerCentersD[iSticker], new Integer(iSticker));
+                stickerCentersHashTable.put(stickerCentersD[iSticker], iSticker);
             }
         }
 

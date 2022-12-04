@@ -135,7 +135,7 @@ public class PipelineUtils
             int nPolys = 0;
             for(int iSticker = 0; iSticker < nStickers; ++iSticker)
                 nPolys += stickerInds[iSticker].length;
-            if(!com.donhatchsw.util.Arrays.sizesMatch(frame.drawListBuffer, stickerInds, 2))
+            if(!com.donhatchsw.util.Arrays.sizesMatch(frame.drawListBuffer, stickerInds, 3))
             {
                 frame.drawListBuffer = new int[stickerInds.length][][];
                 for(int iSticker = 0; iSticker < stickerInds.length; ++iSticker)
@@ -539,6 +539,7 @@ public class PipelineUtils
         float thispoint[] = {x, y};
         // From front to back, returning the first hit
         float verts[][] = frame.verts;
+        int vertsLength = verts.length;
         int drawList[][] = frame.drawList;
         int stickerInds[][][] = puzzleDescription.getStickerInds();
         int pickedItem[] = null;
@@ -552,11 +553,17 @@ public class PipelineUtils
                 return null;
             }
             int poly[] = stickerInds[iSticker][iPolyWithinSticker];
-            int j;
-            for(j = 0; j < poly.length; ++j)
-                if(twice_triangle_area(verts[poly[j]], verts[poly[(j + 1) % poly.length]], thispoint) > 0)
+            int j, polyLength = poly.length;
+            for(j = 0; j < polyLength; ++j) {
+                int nextJ = (j + 1) % polyLength;
+                if (poly[j] >= vertsLength || poly[nextJ] >= vertsLength) {
+                    System.err.println("PipelineUtil.pick: array indexing error");
+                    return null;
+                }
+                if (twice_triangle_area(verts[poly[j]], verts[poly[nextJ]], thispoint) > 0)
                     break; // it's CW  (>0 means CW since inverted)
-            if(j == poly.length) // they were all CCW, so we hit this poly
+            }
+            if(j == polyLength) // they were all CCW, so we hit this poly
             {
                 pickedItem = item; // = {iSticker, iPolyWithinSticker}
                 break;
@@ -757,8 +764,12 @@ public class PipelineUtils
 
     // XXX figure out where to put this, if anywhere
     private static java.util.Random jitterGenerator = new java.util.Random();
-    private static int jitterRadius = 0; // haha, for debugging, but cool effect, should publicize it
+    private static final int jitterRadius = 0; // haha, for debugging, but cool effect, should publicize it
 
+    // Scratch vars
+    private static int[] xs = new int[3];
+    private static int[] ys = new int[3];
+    private static final float[] rgb = new float[3];
     public static void paintFrame(
         Graphics g,
         AnimFrame frame,
@@ -782,11 +793,9 @@ public class PipelineUtils
         int sticker2cubie[] = puzzleDescription.getSticker2Cubie();
         // Note, the range check protects against wild values of iStickerUnderMouse
         // (e.g. if left over from a previous larger puzzle).
-        int iCubieUnderMouse = (iStickerUnderMouse < 0
-            || iStickerUnderMouse >= sticker2cubie.length) ? -1 : sticker2cubie[iStickerUnderMouse];
+        int iCubieUnderMouse = (iStickerUnderMouse < 0 || iStickerUnderMouse >= sticker2cubie.length)
+                ? -1 : sticker2cubie[iStickerUnderMouse];
 
-        int xs[] = new int[0], // XXX ALLOCATION
-        ys[] = new int[0]; // XXX ALLOCATION
         Color shadowcolor = ground == null ? Color.black : ground.darker().darker().darker().darker();
         for(int iPass = 0; iPass < 2; ++iPass)
         {
@@ -808,12 +817,13 @@ public class PipelineUtils
                 int colorOfSticker = puzzleState[iSticker];
                 Color faceColorThisSticker = faceColors[colorOfSticker % faceColors.length]; // XXX need to make more colors
 
-                if(poly.length > xs.length)
+                int polyLength = poly.length;
+                if(polyLength > xs.length)
                 {
-                    xs = new int[poly.length]; // XXX ALLOCATION
-                    ys = new int[poly.length]; // XXX ALLOCATION
+                    xs = new int[polyLength]; // XXX ALLOCATION
+                    ys = new int[polyLength]; // XXX ALLOCATION
                 }
-                for(int i = 0; i < poly.length; ++i)
+                for(int i = 0; i < polyLength; ++i)
                 {
                     if(poly[i] >= verts.length)
                         return;
@@ -826,7 +836,6 @@ public class PipelineUtils
                         ys[i] += jitterGenerator.nextInt(2 * jitterRadius + 1) - jitterRadius;
                     }
                 }
-                float[] rgb = new float[3];
                 faceColorThisSticker.getColorComponents(rgb);
                 Color stickercolor = new Color(
                     brightness * rgb[0],
@@ -852,13 +861,15 @@ public class PipelineUtils
             System.out.println("    out PipelineUtils.paintFrame");
     } // paintFrame
 
-    private static float tmpTWAf1[] = new float[2], tmpTWAf2[] = new float[2]; // scratch vars
+    // Scratch vars
+    private static final float tmpTWAf1[] = new float[2];
+    private static final float tmpTWAf2[] = new float[2];
     private static float twice_triangle_area(float v0[], float v1[], float v2[])
     {
-        //float tmpTNf1[] = new float[2], tmpTNf2[] = new float[2];
-        Vec_h._VMV2(tmpTWAf1, v1, v0);
-        Vec_h._VMV2(tmpTWAf2, v2, v0);
-        return Vec_h._VXV2(tmpTWAf1, tmpTWAf2);
+        // Compute (v1 - v0) * (v2 - v0)
+        return - (v2[0] * v1[1]) + (v2[0] * v0[1])
+                + (v0[0] * v1[1]) + (v2[1] * v1[0])
+                - (v2[1] * v0[0]) - (v0[1] * v1[0]);
     }
 
 } // class PipelineUtils

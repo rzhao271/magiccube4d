@@ -459,7 +459,7 @@ public class Poly
                         if (iNeighbor == edgeEnd[iMin].length)
                         {
                             // didn't find it; append new subdivided edge
-                            edgeEnd[iMin] = (int[])Arrays.append(edgeEnd[iMin], iMax);
+                            edgeEnd[iMin] = Arrays.append(edgeEnd[iMin], iMax);
                             edges[iMin] = (int[][])Arrays.append(edges[iMin], new int[n+1]);
                             edges[iMin][iNeighbor][0] = oldToNewVerts[iMin];
                             for (int k = 1; k <= n-1; ++k)
@@ -775,7 +775,7 @@ public class Poly
                         // The derivation inds for every inner contour vertex
                         // on this polygon is the outer contour together with
                         // the cell center...
-                        int outerContourAndCellCenter[] = (int[])Arrays.append(
+                        int outerContourAndCellCenter[] = Arrays.append(
                                                         outerContour, nVerts+iCell);
 
                         for (int iInnerContour = 0; (iInnerContour) < (nContours-1); ++iInnerContour)
@@ -898,7 +898,7 @@ public class Poly
                         {
                             int iVert = tri[iVertThisTri];
                             // XXX this is inefficient-- should allocate once up front, and should notice sharing
-                            indsOfPointsInFinalTesselatedVerts = (int[])Arrays.append(indsOfPointsInFinalTesselatedVerts, iVert);
+                            indsOfPointsInFinalTesselatedVerts = Arrays.append(indsOfPointsInFinalTesselatedVerts, iVert);
                         }
                     }
                     double points[][] = (double[][])Arrays.getMany(tesselatedVerts, indsOfPointsInFinalTesselatedVerts);

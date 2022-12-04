@@ -662,7 +662,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     public static void zerovec(int result[])
     {
         for (int i = (result.length)-1; (i) >= 0; --i)
-            result[i] = (int)0;
+            result[i] = 0;
     }
     /** zero a matrix */
     public static void zeromat(double result[][])
@@ -692,7 +692,9 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** row vector times matrix */
     public static void vxm(double result[], double v[], double m[][])
     {
-        do { if (!(result != v)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+663 +"): " + "result != v" + ""); } while (false);
+        if (result == v) {
+           throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+663 +"): " + "result != v" + "");
+        }
         zerovec(result);
         int i, vLen = v.length;
         for (i = 0; (i) < (vLen); ++i)
@@ -704,13 +706,13 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
 
     // XXX duplicate code above
     /** row vector times matrix */
-    public static void vxm(float result[], float v[], float m[][])
-    {
-        do { if (!(result != v)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+677 +"): " + "result != v" + ""); } while (false);
-        int vLen = v.length;
+    public static void vxm(float result[], float v[], float m[][]) {
+        if (result == v) {
+            throw new Error("Assumption failed at " + "com/donhatchsw/util/VecMath.prejava" + "(" + 677 + "): " + "result != v" + "");
+        }
         zerovec(result);
-        int i, j;
-        for (i = 0; (i) < (vLen); ++i)
+        int i, vLen = v.length;
+        for (i = 0; i < vLen; ++i)
             vpsxv(result, result, v[i], m[i]);
         // if v is short, pad it with 1's
         for (; i < m.length; ++i)
@@ -721,11 +723,12 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** row vector times matrix */
     public static void vxm(int result[], int v[], int m[][])
     {
-        do { if (!(result != v)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+692 +"): " + "result != v" + ""); } while (false);
-        int vLen = v.length;
+        if (result == v) {
+            throw new Error("Assumption failed at " + "com/donhatchsw/util/VecMath.prejava" + "(" + 692 + "): " + "result != v" + "");
+        }
         zerovec(result);
-        int i, j;
-        for (i = 0; (i) < (vLen); ++i)
+        int i, vLen = v.length;
+        for (i = 0; i < vLen; ++i)
             vpsxv(result, result, v[i], m[i]);
         // if v is short, pad it with 1's
         for (; i < m.length; ++i)
@@ -781,7 +784,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
              System.out.println("m1[0].length == m0[0].length" + " = " + (m1[0].length == m0[0].length));
              System.out.println("result.length == m0[0].length+1" + " = " + (result.length == m0[0].length+1));
              System.out.println("result[0].length == m0[0].length" + " = " + (result[0].length == m0[0].length));
-                do { if (!(false)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+752 +"): " + "false" + ""); } while (false);
+             throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+752 +"): " + "false" + "");
             }
         }
 // 766 # 765 "com/donhatchsw/util/VecMath.prejava"
@@ -812,7 +815,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** matrix times column vector */
     public static void mxv(double result[], double m[][], double v[])
     {
-        do { if (!(result != v)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+792 +"): " + "result != v" + ""); } while (false);
+        do { if (result == v) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+792 +"): " + "result != v" + ""); } while (false);
         int nRows = m.length;
         if (nRows == 0)
             return;
@@ -1189,7 +1192,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
             int nDims = coords[0].length;
             Class indsClass = inds.getClass();
             Class componentType = indsClass.getComponentType();
-            do { if (!(componentType != null)) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1169 +"): " + "componentType != null" + ""); } while (false); // inds must be an array
+            do { if (componentType == null) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1169 +"): " + "componentType != null" + ""); } while (false); // inds must be an array
             if (componentType.isArray())
             {
                 int n = java.lang.reflect.Array.getLength(inds);
@@ -1300,7 +1303,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** transpose matrix */
     public static void transpose(double result[][], double M[][])
     {
-        do { if (!(result != M)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1280 +"): " + "result != M" + ""); } while (false);
+        do { if (result == M) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1280 +"): " + "result != M" + ""); } while (false);
         for (int i = (M.length)-1; (i) >= 0; --i)
         for (int j = (M[i].length)-1; (j) >= 0; --j)
             result[j][i] = M[i][j];
@@ -1374,7 +1377,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
                     imax = i;
                 }
             }
-            do { if (!(imax != -1)) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1354 +"): " + "imax != -1" + ""); } while (false);
+            do { if (imax == -1) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1354 +"): " + "imax != -1" + ""); } while (false);
             if (j != imax) // Do we need to interchange rows?
             {
                 // Yes, do so...
@@ -1725,7 +1728,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
         if (normsqrd(result) < 1e20) // XXX work around the TINY thing... this is going to have to cleaned up eventually to deal with nearly singular matrices anyway
         {
             // check that it worked, i.e. that b = A * result
-            do { if (!(result != b)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1705 +"): " + "result != b" + ""); } while (false); // XXX shouldn't assume this
+            do { if (result == b) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1705 +"): " + "result != b" + ""); } while (false); // XXX shouldn't assume this
             double bb[] = mxv(A, result);
             //PRINTMAT(A);
             //PRINTVEC(result);
@@ -1849,7 +1852,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** Finds the matrix that rotates radians in the direction from fromAxis to toAxis, when applied to a vector by multiplying the matrix on the right by the row vector on the left. */
     public static void makeRowRotMat(double M[][], int fromAxis, int toAxis, double radians)
     {
-        do { if (!(fromAxis != toAxis)) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1829 +"): " + "fromAxis != toAxis" + ""); } while (false); // which means dim must be >= 2
+        do { if (fromAxis == toAxis) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1829 +"): " + "fromAxis != toAxis" + ""); } while (false); // which means dim must be >= 2
         identitymat(M);
         double s = Math.sin(radians);
         double c = Math.cos(radians);
@@ -1861,7 +1864,7 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** Finds the matrix that rotates radians in the direction from fromAxis to toAxis, when applied to a vector by multiplying the matrix on the right by the row vector on the left. */
     public static void makeRowRotMat(float M[][], int fromAxis, int toAxis, float radians)
     {
-        do { if (!(fromAxis != toAxis)) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1841 +"): " + "fromAxis != toAxis" + ""); } while (false); // which means dim must be >= 2
+        do { if (fromAxis == toAxis) throw new Error("Assertion failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+1841 +"): " + "fromAxis != toAxis" + ""); } while (false); // which means dim must be >= 2
         identitymat(M);
         float s = (float)Math.sin(radians);
         float c = (float)Math.cos(radians);
@@ -2408,14 +2411,22 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
     /** Normalize a vector. XXX leaves 0 as 0! may be unexpected in some cases */
     public static void normalize(double result[], double v[])
     {
-        double len = norm(v);
-        vxs(result, v, len==(double)0 ? (double)1 : (double)1/len);
+        double len = dot(v, v);
+        if (len == 0) {
+            zerovec(result);
+        } else {
+            vxs(result, v, 1 / Math.sqrt(len));
+        }
     }
     /** Normalize a vector. XXX leaves 0 as 0! may be unexpected in some cases */
     public static void normalize(float result[], float v[])
     {
-        float len = norm(v);
-        vxs(result, v, len==(float)0 ? (float)1 : (float)1/len);
+        float len = dot(v, v);
+        if (len == 0) {
+            zerovec(result);
+        } else {
+            vxs(result, v, 1 / (float)Math.sqrt(len));
+        }
     }
 
     /** Gram-Schmidt orthonormalize the first k rows of a matrix. */
@@ -3478,8 +3489,8 @@ PRINTVEC(vxmxm(new double[]{0,1,2,3,4,5},M,pva));
         /** invert permutation */
         public static void invertperm(int result[], int perm[])
         {
-            do { if (!(result != perm)) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+3439 +"): " + "result != perm" + ""); } while (false);
-            int n = ((result.length)<=(perm.length)?(result.length):(perm.length));
+            do { if (result == perm) throw new Error("Assumption failed at "+"com/donhatchsw/util/VecMath.prejava"+"("+3439 +"): " + "result != perm" + ""); } while (false);
+            int n = Math.min(result.length, perm.length);
             for (int i = (n)-1; (i) >= 0; --i)
                 result[perm[i]] = i;
         } // invertperm
