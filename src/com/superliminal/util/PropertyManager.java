@@ -1,5 +1,6 @@
 package com.superliminal.util;
 
+import java.nio.file.Files;
 import java.util.*;
 import java.io.*;
 import java.awt.*;
@@ -215,7 +216,7 @@ public class PropertyManager extends Properties {
             if(!localPropFile.exists())
                 return; // nothing to load
             try {
-                load(new FileInputStream(localPropFile));
+                load(Files.newInputStream(localPropFile.toPath()));
             } catch(IOException e) {
                 System.err.println("PropertyManager.LocalProps: Could not load local prop file '" + localPropFile.getAbsolutePath() + "'");
                 this.localPropFile = null;
@@ -256,7 +257,7 @@ public class PropertyManager extends Properties {
             if(localPropFile == null || storeFailed)
                 return;
             try {
-                this.store(new FileOutputStream(localPropFile), PRODUCT_NAME + " User Preferences");
+                this.store(Files.newOutputStream(localPropFile.toPath()), PRODUCT_NAME + " User Preferences");
             } catch(IOException e) {
                 storeFailed = true; // so as to only give fail msg once
                 if(!localPropFile.canWrite())
