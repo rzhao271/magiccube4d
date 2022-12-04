@@ -1,11 +1,12 @@
 package com.superliminal.util;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.StringReader;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -201,52 +202,57 @@ public class ColorUtils {
 
     public static Color[] findColors(String schlafli, int len) {
         String fname = colorFilename(schlafli);
-        URL furl = ResourceUtils.getResource(fname);
-        if (furl == null) {
+        File file = new File(StaticUtils.getBinDir(), fname);
+        if(!file.exists()) {
             fname = MagicCube.FACE_COLORS_FILE;
-            furl = ResourceUtils.getResource(fname);
-            if (furl == null) {
+            file = new File(StaticUtils.getBinDir(), fname);
+            if(!file.exists()) {
                 return null;
             }
         }
-        return findColors(len, furl);
+        return findColors(len, file);
     }
 
-    private static Color[] findColors(int len, URL furl) {
-        for(Color[] cols : readColorLists(furl)) {
+    private static Color[] findColors(int len, File file) {
+        Color[][] lists = readColorLists(file);
+        if(lists == null) {
+            return null;
+        }
+        for(Color[] cols : lists) {
             if(cols.length == len)
                 return cols;
         }
         return null;
     }
 
-    private static Color[][] readColorLists(URL furl) {
-        String contents = ResourceUtils.readFileFromURL(furl);
-        //JOptionPane.showMessageDialog(null, contents);
-        if(contents == null)
-            return new Color[0][];
-        ArrayList<Color[]> colorlines = new ArrayList<>();
+    private static Color[][] readColorLists(File file) {
+        List<String> lines;
         try {
-            BufferedReader br = new BufferedReader(new StringReader(contents));
-            for(String line = br.readLine(); line != null;) {
-                StringTokenizer st = new StringTokenizer(line);
-                Color[] colorlist = new Color[st.countTokens()];
-                for(int i = 0; i < colorlist.length; i++) {
-                    String colstr = st.nextToken();
-                    colorlist[i] = PropertyManager.parseColor(colstr);
-                    if(colorlist[i] == null) {
-                        colorlist = null;
-                        break; // bad line
-                    }
-                }
-                if(colorlist != null)
-                    colorlines.add(colorlist);
-                line = br.readLine();
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
+            lines = Files.readAllLines(file.toPath(), StandardCharsets.US_ASCII);
+        } catch(IOException e) {
+            return null;
         }
-        return colorlines.toArray(new Color[0][]);
+
+        if(lines.isEmpty()) {
+            return null;
+        }
+
+        ArrayList<Color[]> colorlines = new ArrayList<>();
+        for(String line : lines) {
+            StringTokenizer st = new StringTokenizer(line);
+            Color[] colorlist = new Color[st.countTokens()];
+            for(int i = 0; i < colorlist.length; i++) {
+                String colstr = st.nextToken();
+                colorlist[i] = PropertyManager.parseColor(colstr);
+                if(colorlist[i] == null) {
+                    colorlist = null;
+                    break; // bad line
+                }
+            }
+            if(colorlist != null)
+                colorlines.add(colorlist);
+        }
+        return colorlines.toArray(new Color[colorlines.size()][]);
     }
 
 
