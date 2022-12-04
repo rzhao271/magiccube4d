@@ -1291,11 +1291,17 @@ public class MC4DSwing extends JFrame {
                 }
             }
         });
-        // We also add right-click-drag to change the view scale,
-        // like on MC5D
+
+        // We also add right-click-drag to change the view scale, like on MC5D.
+        final boolean[] enableZoom = {false};
         view.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent me) {
+                enableZoom[0] = PropertyManager.getBoolean("rightclickdragzoom", DefaultProps.ZOOM_ON_RIGHT_CLICK_DRAG);
+                if(!enableZoom[0]) {
+                    return;
+                }
+
                 if(viewScaleModel != null && SwingUtilities.isRightMouseButton(me)) {
                     lastDrag = me.getPoint();
                     lastViewScaleValue = viewScaleModel.getValue();
@@ -1304,12 +1310,18 @@ public class MC4DSwing extends JFrame {
 
             @Override
             public void mouseReleased(MouseEvent me) {
+                if(!enableZoom[0]) {
+                    return;
+                }
                 lastDrag = null;
             }
         });
         view.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent me) {
+                if(!enableZoom[0]) {
+                    return;
+                }
                 if(viewScaleModel != null && lastDrag != null && SwingUtilities.isRightMouseButton(me)) {
                     float[] end = new float[]{me.getX(), me.getY()}, drag_dir = new float[2];
                     Vec_h._VMV2(drag_dir, new float[]{lastDrag.x, lastDrag.y}, end);
@@ -1482,11 +1494,12 @@ public class MC4DSwing extends JFrame {
             SpringUtilities.makeCompactGrid(sliders, 6, 2, 0, 0, 0, 0);
             JPanel modes = new JPanel();
             modes.setLayout(new BoxLayout(modes, BoxLayout.Y_AXIS));
-            modes.add(new LeftAlignedRow(new PropCheckBox("Show Shadows", "shadows", DefaultProps.DRAW_SHADOWS, repainter, null)));
+            modes.add(new LeftAlignedRow(new PropCheckBox("Show Shadows", "shadows", DefaultProps.DRAW_SHADOWS, repainter, "Whether to draw a shadow of the puzzle on the ground")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Allow Auto-Rotation", "autorotate", DefaultProps.AUTO_ROTATE, repainter, "Whether to keep spinning if mouse released while dragging")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Highlight by Cubie", "highlightbycubie", DefaultProps.HIGHLIGHT_BY_CUBIE, repainter, "Whether to highlight all stickers of hovered piece or just the hovered sticker")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Allow Antialiasing", "antialiasing", DefaultProps.ANTIALIASING, repainter, "Whether to smooth polygon edges when still - Warning: Can be expensive on large puzzles")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Mute Sound Effects", MagicCube.MUTED, DefaultProps.MUTE_SOUND_EFFECTS, repainter, "Whether to allow sound effects")));
+            modes.add(new LeftAlignedRow(new PropCheckBox("Zoom on Right-Click Drag", "rightclickdragzoom", DefaultProps.ZOOM_ON_RIGHT_CLICK_DRAG, repainter, "Whether to zoom on right-click drag instead of rotate in 4D")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Only Allow Ridge Turns", "onlyridgeturns", false, repainter, "Whether to only allow ridge turns")));
             modes.add(new LeftAlignedRow(blindfoldbox));
             final PropCheckBox quick = new PropCheckBox("Quick Moves:", "quickmoves", false, repainter, "Whether to skip some or all twist animation");
