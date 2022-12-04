@@ -326,25 +326,25 @@ public final class CSG
                         }
                     }
 
-                    java.util.Vector lists[] = new java.util.Vector[dim+1];
+                    java.util.List<java.util.List<Polytope>> lists = new java.util.ArrayList<>(dim+1);
                     {
                         for (int iDim = 0; (iDim) < (dim+1); ++iDim)
-                            lists[iDim] = new java.util.Vector();
-                        java.util.Vector flatList = new java.util.Vector();
+                            lists.add(new java.util.ArrayList<>());
+                        java.util.ArrayList<Polytope> flatList = new java.util.ArrayList<>();
 
                         this.aux = new VisitedAux(this.aux); // mark it visited when queued
-                        flatList.addElement(this);
+                        flatList.add(this);
                         for (int flatIndex = 0; (flatIndex) < (flatList.size()); ++flatIndex) // while flatList.size() is increasing!
                         {
-                            Polytope elt = (Polytope)flatList.get(flatIndex);
-                            lists[elt.dim].addElement(elt);
+                            Polytope elt = flatList.get(flatIndex);
+                            lists.get(elt.dim).add(elt);
                             for (int iFacet = 0; (iFacet) < (elt.facets.length); ++iFacet)
                             {
                                 Polytope facet = elt.facets[iFacet].p;
                                 if (!(facet.aux instanceof VisitedAux)) // save even when elt.aux is null
                                 {
                                     facet.aux = new VisitedAux(facet.aux); // mark it visited when queued
-                                    flatList.addElement(facet);
+                                    flatList.add(facet);
                                 }
                             }
                         }
@@ -353,16 +353,14 @@ public final class CSG
                     _allElements = new Polytope[dim+1][];
                     for (int iDim = 0; (iDim) < (dim+1); ++iDim)
                     {
-                        _allElements[iDim] = new Polytope[lists[iDim].size()];
-                        lists[iDim].copyInto(_allElements[iDim]);
+                        _allElements[iDim] = lists.get(iDim).toArray(new Polytope[lists.get(iDim).size()]);
                         SortStuff.sort(_allElements[iDim],
                                        new SortStuff.Comparator() {
                                            public int compare(Object _a, Object _b)
                                            {
                                                Polytope a = (Polytope)_a;
                                                Polytope b = (Polytope)_b;
-                                               return a.id < b.id ? -1 :
-                                                      a.id > b.id ? 1 : 0;
+                                               return Long.compare(a.id, b.id);
                                            }
                                        });
                         for (int iElt = 0; (iElt) < (_allElements[iDim].length); ++iElt)
