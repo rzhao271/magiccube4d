@@ -7,6 +7,7 @@ import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -14,6 +15,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
@@ -887,7 +891,10 @@ public class MC4DSwing extends JFrame {
         for(int i = 1; i <= 8; i++) {
             scrambler = new Scrambler(i);
             scrambleItem = new JMenuItem("" + i);
-            StaticUtils.addHotKey(KeyEvent.VK_0 + i, scrambleItem, "Scramble" + i, scrambler);
+            // Removed the Ctrl+Number hotkeys here,
+            // because when accidentally pressed during a solve
+            // involving slice moves, it erases the history
+            scrambleItem.addActionListener(scrambler);
             scramblemenu.add(scrambleItem);
         }
         scramblemenu.addSeparator();
@@ -1178,6 +1185,11 @@ public class MC4DSwing extends JFrame {
         mainTabsContainer.validate();
     }
 
+    // The following fields are used to implement
+    // right-click-drag in the next method
+    private Point lastDrag;
+    private int lastViewScaleValue;
+
     private void initPuzzle(String log) {
         scrambleState = SCRAMBLE_NONE;
         double initial_edge_length = MagicCube.DEFAULT_LENGTH;
@@ -1270,12 +1282,42 @@ public class MC4DSwing extends JFrame {
             @Override
             public void mouseWheelMoved(MouseWheelEvent mwe) {
                 if(viewScaleModel != null && mwe.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-                    int
-                    min = viewScaleModel.getMinimum(),
-                    max = viewScaleModel.getMaximum(),
-                    cur = viewScaleModel.getValue(),
-                    newValue = (int) (cur + (max - min) / 100f * mwe.getWheelRotation());
+                    int min = viewScaleModel.getMinimum(),
+                        max = viewScaleModel.getMaximum(),
+                        cur = viewScaleModel.getValue(),
+                        newValue = (int) (cur + (max - min) / 100f * mwe.getWheelRotation());
                     //System.out.println("whee! " + " from " +  cur + " to " + newValue + " (" + min + "," + max + ")");
+                    viewScaleModel.setValue(newValue);
+                }
+            }
+        });
+        // We also add right-click-drag to change the view scale,
+        // like on MC5D
+        view.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent me) {
+                if(viewScaleModel != null && SwingUtilities.isRightMouseButton(me)) {
+                    lastDrag = me.getPoint();
+                    lastViewScaleValue = viewScaleModel.getValue();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent me) {
+                lastDrag = null;
+            }
+        });
+        view.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent me) {
+                if(viewScaleModel != null && lastDrag != null && SwingUtilities.isRightMouseButton(me)) {
+                    float[] end = new float[]{me.getX(), me.getY()}, drag_dir = new float[2];
+                    Vec_h._VMV2(drag_dir, new float[]{lastDrag.x, lastDrag.y}, end);
+                    drag_dir[1] *= -1; // in Windows, Y is down, so invert it
+                    int min = viewScaleModel.getMinimum(), max = viewScaleModel.getMaximum(),
+                        newValue = (int) (lastViewScaleValue + (max - min) / 1000f * drag_dir[1]);
+// System.out.println("whee! " + " from " + lastViewScaleValue + " to " +
+// newValue + " (" + min + "," + max + ")");
                     viewScaleModel.setValue(newValue);
                 }
             }
@@ -1445,6 +1487,7 @@ public class MC4DSwing extends JFrame {
             modes.add(new LeftAlignedRow(new PropCheckBox("Highlight by Cubie", "highlightbycubie", false, repainter, "Whether to highlight all stickers of hovered piece or just the hovered sticker")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Allow Antialiasing", "antialiasing", true, repainter, "Whether to smooth polygon edges when still - Warning: Can be expensive on large puzzles")));
             modes.add(new LeftAlignedRow(new PropCheckBox("Mute Sound Effects", MagicCube.MUTED, false, repainter, "Whether to allow sound effects")));
+            modes.add(new LeftAlignedRow(new PropCheckBox("Only Allow Ridge Turns", "onlyridgeturns", false, repainter, "Whether to only allow ridge turns")));
             modes.add(new LeftAlignedRow(blindfoldbox));
             final PropCheckBox quick = new PropCheckBox("Quick Moves:", "quickmoves", false, repainter, "Whether to skip some or all twist animation");
             modes.add(new LeftAlignedRow(quick));

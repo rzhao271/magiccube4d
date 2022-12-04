@@ -99,14 +99,16 @@ public class RotationHandler {
             spinDelta[3][1] += dy;
         }
 
-        boolean right = !left && !middle;
-        if(right) {
-            spinDelta[0][1] += dx;
-            spinDelta[1][0] -= dx;
-
-            spinDelta[3][2] -= dy;
-            spinDelta[2][3] += dy;
-        }
+        // Commenting this part out disables the default right-click-drag
+        // functionality
+//        boolean right = !left && !middle;
+//        if(right) {
+//            spinDelta[0][1] += dx;
+//            spinDelta[1][0] -= dx;
+//
+//            spinDelta[3][2] -= dy;
+//            spinDelta[2][3] += dy;
+//        }
 
         // Handle the sensitivity.
         VecMath.mxs(spinDelta, spinDelta, .005 * PropertyManager.getFloat("dragfactor", 1));

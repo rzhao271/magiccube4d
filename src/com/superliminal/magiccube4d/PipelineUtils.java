@@ -34,6 +34,7 @@ import java.awt.*;
 //import javax.swing.filechooser.FileSystemView;
 
 import com.donhatchsw.util.VecMath;
+import com.superliminal.util.PropertyManager;
 
 public class PipelineUtils
 {
@@ -712,9 +713,10 @@ public class PipelineUtils
         PickInfo pickInfo = pickPolyAndStickerCenters(x, y, frame, puzzleDescription);
         if(pickInfo == null)
             return null;
-        float center[] = pickInfo.is2x2x2Cell ? pickInfo.polyCenter : pickInfo.stickerCenter;
+        boolean usePolyCenter = PropertyManager.getBoolean("onlyridgeturns", false) || pickInfo.is2x2x2Cell;
+        float center[] = usePolyCenter ? pickInfo.polyCenter : pickInfo.stickerCenter;
         pickInfo.gripIndex = puzzleDescription.getClosestGrip(
-            center, pickInfo.faceIndex, pickInfo.stickerIndex, pickInfo.is2x2x2Cell);
+            center, pickInfo.faceIndex, pickInfo.stickerIndex, usePolyCenter);
         return pickInfo;
     }
 
