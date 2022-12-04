@@ -41,12 +41,23 @@ public class PuzzleManager
         resetPuzzleStateNoEvent();
         firePuzzleChanged(false);
     }
+    private void resetPuzzleColors() {
+        Color[] userColors = ColorUtils.findColors(
+                puzzleDescription.getSchlafliProduct(),
+                puzzleDescription.nFaces());
+        if(userColors != null)
+            faceColors = userColors;
+        else if(puzzleDescription.nFaces() == 8)
+            faceColors = MagicCube.DEFAULT_FACE_COLORS;
+        else
+            faceColors = ColorUtils.generateVisuallyDistinctColors(puzzleDescription.nFaces(), .7f, .1f);
+    }
     public void resetPuzzleStateNoEvent() {
         nTwist = iTwist = 0;
         if(puzzleDescription == null)
             return;
         puzzleState = VecMath.copyvec(puzzleDescription.getSticker2Face());
-        faceColors = ColorUtils.findColors(puzzleDescription.getSchlafliProduct(), puzzleDescription.nFaces());
+        resetPuzzleColors();
     }
 
     //
@@ -119,15 +130,7 @@ public class PuzzleManager
                 if(newPuzzle != null) {
                     succeeded = true;
                     puzzleDescription = newPuzzle;
-                    Color[] userColors = ColorUtils.findColors(
-                        puzzleDescription.getSchlafliProduct(),
-                        puzzleDescription.nFaces());
-                    if(userColors != null)
-                        faceColors = userColors;
-                    else if(puzzleDescription.nFaces() == 8)
-                        faceColors = MagicCube.DEFAULT_FACE_COLORS;
-                    else
-                        faceColors = ColorUtils.generateVisuallyDistinctColors(puzzleDescription.nFaces(), .7f, .1f);
+                    resetPuzzleColors();
                     resetPuzzleStateNoEvent();
                 }
                 return null;
