@@ -273,7 +273,7 @@ public final class Arrays
         int bLen = java.lang.reflect.Array.getLength(b);
         if (aLen != bLen)
             return false;
-        for (int i = 0; (i) < (aLen); ++i)
+        for (int i = 0; i < aLen; ++i)
             if (!sizesMatch(java.lang.reflect.Array.get(a, i),
                             java.lang.reflect.Array.get(b, i),
                             depth-1))

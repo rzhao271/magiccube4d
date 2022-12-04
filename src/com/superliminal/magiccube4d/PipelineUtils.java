@@ -135,7 +135,7 @@ public class PipelineUtils
             int nPolys = 0;
             for(int iSticker = 0; iSticker < nStickers; ++iSticker)
                 nPolys += stickerInds[iSticker].length;
-            if(!com.donhatchsw.util.Arrays.sizesMatch(frame.drawListBuffer, stickerInds, 2))
+            if(!com.donhatchsw.util.Arrays.sizesMatch(frame.drawListBuffer, stickerInds, 3))
             {
                 frame.drawListBuffer = new int[stickerInds.length][][];
                 for(int iSticker = 0; iSticker < stickerInds.length; ++iSticker)
