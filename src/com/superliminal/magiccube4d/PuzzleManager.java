@@ -46,6 +46,7 @@ public class PuzzleManager
         if(puzzleDescription == null)
             return;
         puzzleState = VecMath.copyvec(puzzleDescription.getSticker2Face());
+        faceColors = ColorUtils.findColors(puzzleDescription.getSchlafliProduct(), puzzleDescription.nFaces());
     }
 
     //
