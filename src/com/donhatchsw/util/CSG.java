@@ -2992,7 +2992,7 @@ public final class CSG
             if (result != null)
                 ocean.put(key, result.p);
             else
-                ocean.put(key, null); // means null when fished out
+                ocean.put(key, null);
 
             if (verboseLevel >= 2)
                 System.out.println(indentString+"    result = "+(result==null?"(null)":result.toString(indentString+"             ", false, false, null)));

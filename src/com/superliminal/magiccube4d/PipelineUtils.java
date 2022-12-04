@@ -862,7 +862,7 @@ public class PipelineUtils
     } // paintFrame
 
     // Scratch vars
-    private static final float[] tmpTWAf1 = new float[2];
+    private static final float tmpTWAf1[] = new float[2];
     private static final float tmpTWAf2[] = new float[2];
     private static float twice_triangle_area(float v0[], float v1[], float v2[])
     {
