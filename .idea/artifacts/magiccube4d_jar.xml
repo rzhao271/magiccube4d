@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="magiccube4d:jar">
+    <output-path>$PROJECT_DIR$/classes/artifacts/magiccube4d_jar</output-path>
+    <root id="archive" name="magiccube4d.jar">
+      <element id="module-output" name="magiccube4d" />
+    </root>
+  </artifact>
+</component>
